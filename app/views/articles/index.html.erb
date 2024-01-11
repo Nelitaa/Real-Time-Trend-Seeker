@@ -1,0 +1,31 @@
+<h1>Welcome to our Article Database</h1>
+
+<h2>What article are you looking for?</h2>
+
+<%= form_tag(articles_path, method: :get) do %>
+  <%= text_field_tag :term, params[:term], placeholder: "Search articles..." %>
+  <%= submit_tag "Search" %>
+<% end %>
+
+
+<h2>Popular searches:</h2>
+<% if @popular_searches.present? %>
+  <ul>
+    <% @popular_searches.each do |term, count| %>
+      <li><%= "#{term} (#{count})" %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No popular searches yet.</p>
+<% end %>
+
+<h2>Articles</h2>
+<% if @articles.present? %>
+  <% @articles.each do |article| %>
+    <div>
+      <%= link_to article.title, articles_path(article) %>
+    </div>
+  <% end %>
+<% else %>
+  <p>No articles found</p>
+<% end %>

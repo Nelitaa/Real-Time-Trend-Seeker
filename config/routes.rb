@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  root 'searches#home'
-
-  get '/searches', to: 'searches#index', as: :searches
+  root 'articles#index'
 
   resources :articles
+
+  get '/search', to: 'searches#index', as: :search
 end

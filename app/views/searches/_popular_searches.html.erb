@@ -1,9 +1,0 @@
-<% if @popular_searches.present? %>
-  <ul>
-    <% @popular_searches.each do |term, count| %>
-      <li><%= "#{term} (#{count})" %></li>
-    <% end %>
-  </ul>
-<% else %>
-  <p>No popular searches yet.</p>
-<% end %>

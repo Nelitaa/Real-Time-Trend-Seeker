@@ -1,9 +1,0 @@
-<% if @articles.present? %>
-  <% @articles.each do |article| %>
-    <div>
-      <%= link_to article.title, articles_path(article) %>
-    </div>
-  <% end %>
-<% else %>
-  <p>No articles found</p>
-<% end %>

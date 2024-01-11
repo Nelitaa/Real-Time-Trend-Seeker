@@ -12,9 +12,11 @@ class ArticlesController < ApplicationController
       @articles = Article.all
     end
 
-    @popular_searches = Search.group(:term).order('count_term DESC').limit(3).count(:term)
-
-    render 'index'
+    if turbo_frame_request?
+      render partial: 'articles', locals: { articles: @articles }
+    else
+      render :index
+    end
   end
 
   private

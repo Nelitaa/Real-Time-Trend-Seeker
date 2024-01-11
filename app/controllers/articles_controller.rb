@@ -10,10 +10,10 @@ class ArticlesController < ApplicationController
     end
 
     @articles = if term.present?
-      Article.select('*')
-      .select(Arel.sql("CASE WHEN title ILIKE #{ActiveRecord::Base.connection.quote("%#{term}%")} THEN 0 ELSE 1 END AS title_priority"))
-      .where('title ILIKE ? OR content ILIKE ?', "%#{term}%", "%#{term}%")
-      .order('title_priority, title')
+                  Article.select('*')
+                  .select(Arel.sql("CASE WHEN title ILIKE #{ActiveRecord::Base.connection.quote("%#{term}%")} THEN 0 ELSE 1 END AS title_priority"))
+                  .where('title ILIKE ? OR content ILIKE ?', "%#{term}%", "%#{term}%")
+                  .order('title_priority, title')
                 else
                   Article.all
                 end

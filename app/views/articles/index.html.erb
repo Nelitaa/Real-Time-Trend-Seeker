@@ -7,5 +7,8 @@
   <%= form.submit "Search" %>
 <% end %>
 
+<h2>Search term:</h2>
+<%= render 'searches/searches', searches: @searches %>
+
 <h2>Articles:</h2>
 <%= render 'articles', articles: @articles %>

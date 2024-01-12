@@ -15,20 +15,17 @@ class ArticlesController < ApplicationController
       @articles = Article.all
     end
 
-    @searches = session[:search_stack].last[:complete_term] if session[:search_stack].present?
-
     respond_to do |format|
       format.html do
         if turbo_frame_request?
-          render partial: 'articles', locals: { articles: @articles, searches: session[:search_stack] }
+          render partial: 'articles', locals: { articles: @articles, searches: @searches }
         else
           render :index
         end
       end
 
       format.turbo_stream do
-        turbo_stream.replace('last-search-term', partial: 'last_search_term', locals: { term: term })
-        turbo_stream.append('articles', partial: 'articles', locals: { articles: @articles, searches: session[:search_stack] })
+        turbo_stream.append('articles', partial: 'articles', locals: { articles: @articles, searches: @searches })
       end
     end
   end
@@ -45,20 +42,21 @@ class ArticlesController < ApplicationController
   end
 
   def update_search_stack
-    term = params[:term]
-    stack = session[:search_stack]
+  term = params[:term]
+  stack = session[:search_stack]
 
-    entry = stack.find { |e| e && e[:complete_term] == term }
-
+  if term.present?
+    entry = stack.find { |e| e[:complete_term] == term }
     if entry.present?
       entry[:count] ||= 0
       entry[:count] += 1
     else
-      stack.push({ fragments: term.split, complete_term: term, timestamp: Time.now, count: 1 }) if term.present?
+      stack.push({ fragments: term.split, complete_term: term, timestamp: Time.now, count: 1 })
     end
+  end
 
-    stack.reject! { |entry| entry.nil? || entry[:timestamp].nil? || entry[:timestamp] < (Time.now - SEARCH_STACK_EXPIRY) }
-
-    session[:search_stack] = stack
+  stack.reject! { |entry| entry.nil? || entry[:timestamp].nil? || entry[:timestamp] < (Time.now - SEARCH_STACK_EXPIRY) }
+  session[:search_stack] = stack
+  @searches = stack.sort_by { |entry| entry[:timestamp] }.reverse.map { |entry| { term: entry[:complete_term], count: entry[:count] } }
   end
 end

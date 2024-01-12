@@ -1,0 +1,11 @@
+<%= turbo_frame_tag 'searches-history' do %>
+  <% if @searches.present? %>
+    <ul id="searches-history">
+      <% @searches.each do |search| %>
+        <p><%= "#{search[:term]} (#{search[:count]} times)" %></p>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>There are no searches yet.</p>
+  <% end %>
+<% end %>

@@ -1,0 +1,14 @@
+<h1>Welcome to our Article Database</h1>
+
+<h2>What article are you looking for?</h2>
+
+<%= form_with(url: articles_path, method: :get, data: { controller: "search-form", turbo_frame: "articles", turbo_action: "advance" }) do |form| %>
+  <%= form.text_field :term, placeholder: "Search articles...", data: { action: "input->search-form#search" } %>
+  <%= form.submit "Search" %>
+<% end %>
+
+<h2>Searches History:</h2>
+<%= render 'searches/searches', searches: @searches %>
+
+<h2>Articles:</h2>
+<%= render 'articles', articles: @articles %>

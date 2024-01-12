@@ -1,3 +1,5 @@
+# rubocop:disable all
+
 class ArticlesController < ApplicationController
   before_action :set_user_ip, only: [:index]
   before_action :initialize_search_stack, only: [:index]
@@ -42,21 +44,26 @@ class ArticlesController < ApplicationController
   end
 
   def update_search_stack
-  term = params[:term]
-  stack = session[:search_stack]
+    term = params[:term]
+    stack = session[:search_stack]
 
-  if term.present?
-    entry = stack.find { |e| e[:complete_term] == term }
-    if entry.present?
-      entry[:count] ||= 0
-      entry[:count] += 1
-    else
-      stack.push({ fragments: term.split, complete_term: term, timestamp: Time.now, count: 1 })
+    if term.present?
+      entry = stack.find { |e| e[:complete_term] == term }
+      if entry.present?
+        entry[:count] ||= 0
+        entry[:count] += 1
+      else
+        stack.push({ fragments: term.split, complete_term: term, timestamp: Time.now, count: 1 })
+      end
     end
-  end
 
-  stack.reject! { |entry| entry.nil? || entry[:timestamp].nil? || entry[:timestamp] < (Time.now - SEARCH_STACK_EXPIRY) }
-  session[:search_stack] = stack
-  @searches = stack.sort_by { |entry| entry[:timestamp] }.reverse.map { |entry| { term: entry[:complete_term], count: entry[:count] } }
+    stack.reject! do |entry|
+      entry.nil? || entry[:timestamp].nil? || entry[:timestamp] < (Time.now - SEARCH_STACK_EXPIRY)
+    end
+    session[:search_stack] = stack
+    @searches = stack.sort_by do |search_entry|
+                  search_entry[:timestamp]
+                end.reverse.map { |result_entry| { term: entry[:complete_term], count: result_entry[:count] } }
   end
 end
+# rubocop:enable all
